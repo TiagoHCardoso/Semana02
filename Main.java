@@ -41,7 +41,7 @@ class Consumidor extends Thread {
 			
 			synchronized( Main.lock )
 			{	
-				// O ideal seria que o wait() estivesse em um while, evitando assim despertares espúreos.
+				// O ideal seria que o wait() estivesse em um while, evitando assim despertares espúrios.
 				if (Main.produtos <= 0) {
 					System.out.println("#~~ Consumidor " + id +  ";\t triste :'(");
 					/*
