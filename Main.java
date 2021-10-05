@@ -16,7 +16,7 @@ class Produtor extends Thread {
 		this.id = novoId;
 	}
 	public void run() {
-		for(int i = 0; i < 1000; i ++ ) {			
+		for(int i = 0; i < 100; i ++ ) {			
 			synchronized( Main.lock )
 			{	
 				if(Main.produtos < 100) {
@@ -25,8 +25,16 @@ class Produtor extends Thread {
 					 * 
 					 * */
 					Main.lock.notify();
-				}
-				System.out.println("#<- Produtor " + id + ";\t\t estoque = " + Main.produtos);
+				} else {
+         				 try {
+            					System.out.println("#~~ Produtor " + id + "-" + i + ";\t cansado... vô mimir. zzZzzzZZzzzzZz");
+						Main.lock.wait();
+					}
+					catch (InterruptedException e) {
+						e.printStackTrace();
+					}
+        }
+					System.out.println("#<- Produtor " + id + "-" + i +";\t\t estoque = " + Main.produtos);
 			}
 		}
 	}
@@ -37,13 +45,13 @@ class Consumidor extends Thread {
 		this.id = novoId;
 	}
 	public void run() {
-		for(int i = 0; i < 1000; i++) {	
+		for(int i = 0; i < 100; i++) {	
 			
 			synchronized( Main.lock )
 			{	
 				// O ideal seria que o wait() estivesse em um while, evitando assim despertares espúrios.
 				if (Main.produtos <= 0) {
-					System.out.println("#~~ Consumidor " + id +  ";\t triste :'(");
+					System.out.println("#~~ Consumidor " + id + "-" + i + ";\t triste :'( vô mimir. zzzzzzzzzzzzzzz");
 					/*
 					 * 
 					 * */
@@ -53,10 +61,12 @@ class Consumidor extends Thread {
 					catch (InterruptedException e) {
 						e.printStackTrace();
 					}
+          				System.out.println("#~~ Consumidor " + id + "-" + i + "; Olha eu de novo aqui.");
 				}
-				if(Main.produtos > 0)
-					Main.produtos = Main.produtos - 1;
-				System.out.println("#-> Consumidor " + id + ";\t estoque = " + Main.produtos);
+				
+				Main.produtos = Main.produtos - 1;
+				System.out.println("#-> Consumidor " + id + "-" + i +";\t estoque = " + Main.produtos);
+        			Main.lock.notify();
 			}
 		
 		}
